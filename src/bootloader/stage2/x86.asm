@@ -1,5 +1,3 @@
-; TODO: Would be nice to implement GUI bootloader
-
 bits 16
 
 section _TEXT class=CODE
@@ -129,6 +127,7 @@ _x86_Disk_Read:
     pop bp
     ret
 
+global _x86_Disk_GetDriveParams
 _x86_Disk_GetDriveParams:
     ; make new call frame
     push bp
