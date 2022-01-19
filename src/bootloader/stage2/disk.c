@@ -31,5 +31,15 @@ void DISK_LBA2CHS(DISK* disk, uint32_t lba, uint16_t* cylinderOut, uint16_t* sec
 }
 
 bool DISK_ReadSectors(DISK *disk, uint32_t lba, uint8_t sectors, uint8_t far *dataOut){
+    uint16_t cylinder, sector, head;
+    
+    DISK_LBA2CHS(disk, lba, &cylinder, &sector, &head);
 
+    for(int i = 0; i < 3; i++){ // Floppy disk reads may fail, so it's recommended to try 3 times
+        if(x86_Disk_Read(disk->id, cylinder, sector, head, sectors, dataOut)) return true;
+
+        x86_Disk_Reset(disk->id);
+    }
+
+    return false;
 }

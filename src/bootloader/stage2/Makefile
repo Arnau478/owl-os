@@ -3,7 +3,7 @@ ASM?=nasm
 CC16?=/usr/bin/watcom/binl/wcc
 LD16?=/usr/bin/watcom/binl/wlink
 
-CFLAGS16?=-4 -d3 -s -wx -ms -zl -zq -fr/dev/null
+CFLAGS16?=-4 -d3 -s -wx -ms -zl -zq -fr/dev/null -za99
 ASMFLAGS?=-f obj
 
 SOURCES_C=$(wildcard *.c)
