@@ -97,9 +97,9 @@ _x86_Disk_Read:
     mov cl, [bp + 7] ; cl - cylinder to bits 6-7
     shl cl, 6
 
-    mov dh, [bp + 8]
+    mov dh, [bp + 10]
 
-    mov al, [bp + 10]
+    mov al, [bp + 8]
     and al, 0x3F
     or cl, al ; cl - sector to bits 0-5
 
