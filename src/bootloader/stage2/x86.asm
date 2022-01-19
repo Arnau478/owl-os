@@ -2,6 +2,27 @@ bits 16
 
 section _TEXT class=CODE
 
+global __U4D
+__U4D:
+    shl edx, 16
+    mov dx, ax
+    mov eax, edx
+    xor edx, edx
+
+    shl ecx, 16
+    mov cx, bx
+
+    div ecx
+    
+    mov ebx, edx
+    mov ecx, edx
+    shr ecx, 16
+
+    mov edx, eax
+    shr edx, 16
+
+    ret
+
 global _x86_div64_32
 _x86_div64_32:
     ; make new call frame
