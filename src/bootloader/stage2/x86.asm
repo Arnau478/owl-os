@@ -128,3 +128,56 @@ _x86_Disk_Read:
     mov sp, bp
     pop bp
     ret
+
+_x86_Disk_GetDriveParams:
+    ; make new call frame
+    push bp
+    mov bp, sp
+
+    ; save regs
+    push es
+    push bx
+    push si
+    push di
+
+    ; call int 0x13
+    mov dl, [bp + 4] ; dl - disk drive
+    mov ah, 0x08
+    mov di, 0
+    mov es, di
+    stc
+    int 0x13
+
+    ; return
+    mov ax, 1
+    sbb ax, 0
+
+    ; out params
+    mov si, [bp + 6] ; drive type from bl
+    mov [si], bl
+
+    mov bl, ch ; lower bits in ch
+    mov bh, cl ; higher bits in cl
+    shr bh, 6
+    mov si, [bp + 8] ; cylindersOut
+    mov [si], bx
+
+    xor ch, ch
+    and cl, 0x3F
+    mov si, [bp + 10]
+    mov [si], cx
+
+    mov cl, dh ; heads - dh
+    mov si, [bp + 12]
+    mov [si], cx
+
+    ; restore regs
+    pop di
+    pop si
+    pop bx
+    pop es
+
+    ; restore old call frame
+    mov sp, bp
+    pop bp
+    ret
