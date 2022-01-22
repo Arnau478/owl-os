@@ -19,7 +19,7 @@ char* strcpy(char* dst, const char* src){
 
     if(src == NULL) {
         *dst = '\0';
-        return NULL;
+        return dst;
     }
 
     while(*src){
