@@ -15,7 +15,7 @@ const char* strchr(const char* str, char chr){
 char* strcpy(char* dst, const char* src){
     char* origDst = dst;
 
-    if(dst = NULL) return NULL;
+    if(dst == NULL) return NULL;
 
     if(src == NULL) {
         *dst = '\0';
