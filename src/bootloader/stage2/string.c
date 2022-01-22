@@ -6,7 +6,7 @@ const char* strchr(const char* str, char chr){
 
     while(*str){
         if(*str == chr) return str;
-        ++str;
+        str++;
     }
 
     return NULL;
@@ -24,10 +24,21 @@ char* strcpy(char* dst, const char* src){
 
     while(*src){
         *dst = *src;
-        ++src;
-        ++dst;
+        src++;
+        dst++;
     }
 
     *dst = '\0';
     return origDst;
+}
+
+unsigned strlen(const char* str){
+    unsigned len = 0;
+
+    while(*str){
+        len++;
+        str++;
+    }
+
+    return len;
 }
