@@ -11,3 +11,23 @@ const char* strchr(const char* str, char chr){
 
     return NULL;
 }
+
+char* strcpy(char* dst, const char* src){
+    char* origDst = dst;
+
+    if(dst = NULL) return NULL;
+
+    if(src == NULL) {
+        *dst = '\0';
+        return NULL;
+    }
+
+    while(*src){
+        *dst = *src;
+        ++src;
+        ++dst;
+    }
+
+    *dst = '\0';
+    return origDst;
+}
