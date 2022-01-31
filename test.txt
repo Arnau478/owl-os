@@ -1,3 +1,0 @@
-This is a test file. It's goal is to debug FAT API on stage 2 bootloader.
-
-Lorem ipsum dolor sit amet consequerum...
