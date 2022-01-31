@@ -11,7 +11,12 @@ void __attribute__((section(".entry"))) start(uint16_t bootDrive)
 
     clrscr();
 
-    printf("Hello world from kernel!!!\n");
+    setcolor(0x07);
+    printf("Hello world from ");
+    setcolor(0x06);
+    printf("kernel");
+    setcolor(0x07);
+    printf("!!!\n");
 
 end:
     for (;;);

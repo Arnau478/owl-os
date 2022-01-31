@@ -6,10 +6,12 @@
 
 const unsigned SCREEN_WIDTH = 80;
 const unsigned SCREEN_HEIGHT = 25;
-const uint8_t DEFAULT_COLOR = 0x7;
+const uint8_t DEFAULT_COLOR = 0x07;
 
 uint8_t* g_ScreenBuffer = (uint8_t*)0xB8000;
 int g_ScreenX = 0, g_ScreenY = 0;
+
+vga_col16_t g_CurrentColor = DEFAULT_COLOR;
 
 void putchr(int x, int y, char c)
 {
@@ -94,6 +96,7 @@ void putc(char c)
 
         default:
             putchr(g_ScreenX, g_ScreenY, c);
+            putcolor(g_ScreenX, g_ScreenY, g_CurrentColor);
             g_ScreenX++;
             break;
     }
@@ -310,4 +313,8 @@ void print_buffer(const char* msg, const void* buffer, uint32_t count)
         putc(g_HexChars[u8Buffer[i] & 0xF]);
     }
     puts("\n");
+}
+
+void setcolor(vga_col16_t col){
+    g_CurrentColor = col;
 }
