@@ -1,7 +1,7 @@
 #include "fat.h"
 #include "stdio.h"
-#include "stdint.h"
-#include "stdbool.h"
+#include <stdint.h>
+#include <stdbool.h>
 #include "stdnull.h"
 #include "memdefs.h"
 #include "minmax.h"
