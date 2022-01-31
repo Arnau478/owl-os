@@ -1,149 +1,205 @@
-bits 16
+%macro x86_EnterRealMode 0
 
-section _TEXT class=CODE
+    [bits 32]
+    jmp word 0x18:.pmode16
 
-global __U4D
-__U4D:
-    shl edx, 16
-    mov dx, ax
-    mov eax, edx
-    xor edx, edx
+.pmode16:
+    [bits 16]
+    mov eax, cr0
+    and al, ~1
+    mov cr0, eax
 
-    shl ecx, 16
-    mov cx, bx
+    jmp word 0x00:.rmode
 
-    div ecx
-    
-    mov ebx, edx
-    mov ecx, edx
-    shr ecx, 16
+.rmode:
+    mov ax, 0
+    mov ds, ax
+    mov ss, ax
 
-    mov edx, eax
-    shr edx, 16
+    sti
 
+%endmacro
+
+%macro x86_EnterProtectedMode 0
+
+    cli
+
+    mov eax, cr0
+    or al, 1
+    mov cr0, eax
+
+    jmp dword 0x08:.pmode
+
+.pmode:
+
+    [bits 32]
+
+    mov ax, 0x10
+    mov ds, ax
+    mov ss, ax
+
+%endmacro
+
+%macro LinearToSegOffset 4
+
+    mov %3, %1
+    shr %3, 4
+    mov %2, %4
+    mov %3, %1
+    and %3, 0xF
+
+%endmacro
+
+global x86_outb
+x86_outb:
+    [bits 32]
+    mov dx, [esp + 4]
+    mov al, [esp + 8]
+    out dx, al
     ret
 
-global __U4M
-__U4M:
-    shl edx, 16
-    mov dx, ax
-    mov eax, edx
-
-    shl ecx, 16
-    mov cx, bx
-
-    mul ecx
-    mov edx, eax
-    shr edx, 16
-
+global x86_inb
+x86_inb:
+    [bits 32]
+    mov dx, [esp + 4]
+    xor eax, eax
+    in al, dx
     ret
 
-global _x86_div64_32
-_x86_div64_32:
+global x86_Disk_GetDriveParams
+x86_Disk_GetDriveParams:
+    [bits 32]
+
     ; make new call frame
-    push bp
-    mov bp, sp
+    push ebp
+    mov ebp, esp
 
-    ; save registers we'll modify
+    x86_EnterRealMode
+
+    [bits 16]
+
+    ; save regs
+    push es
     push bx
+    push esi
+    push di
 
-    ; divide upper 32 bits
-    mov eax, [bp + 8] ; eax <- upper 32 bits of dividend
-    mov ecx, [bp + 12] ; ecx <- divisor
-    xor edx, edx
-    div ecx ; eax <- quot, edx <- remainder
-
-    ; store upper 32 bits of quotient
-    mov bx, [bp + 16]
-    mov [bx + 4], eax
-
-    ; divide lower 32 bits
-    mov eax, [bp + 4] ; eax <- lower 32 bits of divident, edx <- old remainder
-    div ecx
-
-    ; store results
-    mov [bx], eax
-    mov bx, [bp + 18]
-    mov [bx], edx
-
-    ; restore registers we've modified
-    pop bx
-
-    ; restore old call frame
-    mov sp, bp
-    pop bp
-    ret
-
-global _x86_Video_WriteCharTeletype
-_x86_Video_WriteCharTeletype:
-    ; make new call frame
-    push bp
-    mov bp, sp
-
-    push bx
-
-    mov ah, 0x0E
-    mov al, [bp + 4]
-    mov bh, [bp + 6]
-    mov bl, 0xF
-
-    int 0x10
-
-    ; restore bx
-    pop bx
-
-    ; restore old call frame
-    mov sp, bp
-    pop bp
-    ret
-
-global _x86_Disk_Reset
-_x86_Disk_Reset:
-    ; make new call frame
-    push bp
-    mov bp, sp
-
-    mov ah, 0
-    mov dl, [bp + 4] ; dl - drive
+    ; call int 0x13
+    mov dl, [bp + 8] ; dl - disk drive
+    mov ah, 0x08
+    mov di, 0
+    mov es, di
     stc
     int 0x13
 
-    mov ax, 1
-    sbb ax, 0 ; 1 on success, 0 on fail
+    ; out params
+    mov eax, 1
+    sbb eax, 0
+
+    ; drive type from bl
+    LinearToSegOffset [bp + 12], es, esi, si
+    mov [es:si], bl
+
+    ; cylinders
+    mov bl, ch
+    mov bh, cl
+    shr bh, 6
+    inc bx
+
+    LinearToSegOffset [bp + 16], es, esi, si
+    mov [es:si], bx
+
+    ; sectors
+    xor ch, ch
+    and cl, 0x3F
+
+    LinearToSegOffset [bp + 20], es, esi, si
+    mov [es:si], cx
+
+    ; heads
+    mov cl, dh
+    inc cx
+
+    LinearToSegOffset [bp + 24], es, esi, si
+    mov [es:si], cx
+
+    ; restore regs
+    pop di
+    pop esi
+    pop bx
+    pop es
+
+    ; return
+    push eax
+
+    x86_EnterProtectedMode
+
+    [bits 32]
+    
+    pop eax
 
     ; restore old call frame
-    mov sp, bp
-    pop bp
+    mov esp, ebp
+    pop ebp
     ret
 
-global _x86_Disk_Read
-_x86_Disk_Read:
+global x86_Disk_Reset
+x86_Disk_Reset:
+    [bits 32]
+
     ; make new call frame
-    push bp
-    mov bp, sp
+    push ebp
+    mov ebp, esp
+
+    x86_EnterRealMode
+
+    mov ah, 0
+    mov dl, [bp + 8] ; dl - drive
+    stc
+    int 0x13
+
+    mov eax, 1
+    sbb eax, 0 ; 1 on success, 0 on fail
+
+    push eax
+
+    x86_EnterProtectedMode
+
+    pop eax
+
+    ; restore old call frame
+    mov esp, ebp
+    pop ebp
+    ret
+
+global x86_Disk_Read
+x86_Disk_Read:
+    ; make new call frame
+    push ebp
+    mov ebp, esp
+
+    x86_EnterRealMode
 
     ; save modified regs
-    push bx
+    push ebx
     push es
 
     ; setup args
-    mov dl, [bp + 4] ; dl - drive
+    mov dl, [bp + 8] ; dl - drive
 
-    mov ch, [bp + 6] ; ch - cylinder (lower 8 bits)
-    mov cl, [bp + 7] ; cl - cylinder to bits 6-7
+    mov ch, [bp + 12] ; ch - cylinder (lower 8 bits)
+    mov cl, [bp + 13] ; cl - cylinder to bits 6-7
     shl cl, 6
 
-    mov dh, [bp + 10]
-
-    mov al, [bp + 8]
+    mov al, [bp + 16]
     and al, 0x3F
     or cl, al ; cl - sector to bits 0-5
 
-    mov al, [bp + 12] ; al - count
+    mov dh, [bp + 20] ; dh - head
 
-    mov bx, [bp + 16] ; es:bx - far pointer to data out
-    mov es, bx
-    mov bx, [bp + 14]
+    mov al, [bp + 24] ; al - count
+
+    LinearToSegOffset [bp + 28], es, ebx, bx
 
     ; call int 0x13
     mov ah, 0x02
@@ -151,68 +207,20 @@ _x86_Disk_Read:
     int 0x13
 
     ; set return value
-    mov ax, 1
-    sbb ax, 0 ; 1 on success, 0 on fail
+    mov eax, 1
+    sbb eax, 0 ; 1 on success, 0 on fail
 
     ; restore regs
     pop es
-    pop bx
+    pop ebx
+
+    push eax
+
+    x86_EnterProtectedMode
+
+    pop eax
 
     ; restore old call frame
-    mov sp, bp
-    pop bp
-    ret
-
-global _x86_Disk_GetDriveParams
-_x86_Disk_GetDriveParams:
-    ; make new call frame
-    push bp
-    mov bp, sp
-
-    ; save regs
-    push es
-    push bx
-    push si
-    push di
-
-    ; call int 0x13
-    mov dl, [bp + 4] ; dl - disk drive
-    mov ah, 0x08
-    mov di, 0
-    mov es, di
-    stc
-    int 0x13
-
-    ; return
-    mov ax, 1
-    sbb ax, 0
-
-    ; out params
-    mov si, [bp + 6] ; drive type from bl
-    mov [si], bl
-
-    mov bl, ch ; lower bits in ch
-    mov bh, cl ; higher bits in cl
-    shr bh, 6
-    mov si, [bp + 8] ; cylindersOut
-    mov [si], bx
-
-    xor ch, ch
-    and cl, 0x3F
-    mov si, [bp + 10]
-    mov [si], cx
-
-    mov cl, dh ; heads - dh
-    mov si, [bp + 12]
-    mov [si], cx
-
-    ; restore regs
-    pop di
-    pop si
-    pop bx
-    pop es
-
-    ; restore old call frame
-    mov sp, bp
-    pop bp
+    mov esp, ebp
+    pop ebp
     ret

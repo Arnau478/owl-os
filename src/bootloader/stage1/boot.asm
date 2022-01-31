@@ -73,7 +73,7 @@ start:
 	inc dh
 	mov [bdb_heads], dh ; head count
 
-	; compute LBA of root directory = reserved + fats * fat_size
+	; compute LBA of root directory = reserved + fats * sectors_per_fat
 	; note: this section can be hardcoded
 	mov ax, [bdb_sectors_per_fat]
 	mov bl, [bdb_fat_count]
@@ -83,7 +83,7 @@ start:
 	push ax
 
 	; compute size of root directory = (32 * number_of_entries) / bytes_per_sector
-	mov ax, [bdb_sectors_per_fat]
+	mov ax, [bdb_dir_entries_count]
 	shl ax, 5 ; ax *= 32
 	xor dx, dx ; dx = 0
 	div word [bdb_bytes_per_sector] ; number of sectors we need to read
@@ -342,11 +342,11 @@ disk_reset:
 msg_loading: db 'Loading...', ENDL, 0
 msg_read_failed: db 'Read from disk failed!', ENDL, 0
 msg_stage2_not_found: db 'STAGE2.BIN file not found!', ENDL, 0
-file_stage2_bin: db 'STAGE2  BIN', 0
+file_stage2_bin: db 'STAGE2  BIN'
 stage2_cluster: dw 0
 
-STAGE2_LOAD_SEGMENT equ 0x2000
-STAGE2_LOAD_OFFSET equ 0
+STAGE2_LOAD_SEGMENT equ 0x0
+STAGE2_LOAD_OFFSET equ 0x500
 
 times 510-($-$$) db 0
 dw 0xAA55
