@@ -12,11 +12,11 @@ void __attribute__((section(".entry"))) start(uint16_t bootDrive)
     clrscr();
 
     setcolor(0x07);
-    printf("Hello world from ");
+    printf("Booted ");
     setcolor(0x06);
-    printf("kernel");
+    printf("Owl OS");
     setcolor(0x07);
-    printf("!!!\n");
+    printf("...\n");
 
 end:
     for (;;);
