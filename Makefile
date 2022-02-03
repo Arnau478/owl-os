@@ -1,6 +1,6 @@
 include build_scripts/config.mk
 
-.PHONY: all floppy_image kernel bootloader clean always tools_fat run
+.PHONY: all floppy_image kernel bootloader clean always tools_fat run info
 
 all: floppy_image tools_fat
 
@@ -69,3 +69,11 @@ clean:
 #
 run: floppy_image
 	qemu-system-i386 -fda build/main_floppy.img
+
+#
+# Info
+#
+info:
+	@echo "### SHOWING DEBUG INFO ###"
+	@echo "# Main floppy image file FAT structure"
+	@fls build/main_floppy.img -r
