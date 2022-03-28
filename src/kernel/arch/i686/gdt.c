@@ -12,7 +12,7 @@ typedef struct {
 
 typedef struct {
     uint16_t Limit;
-    uint32_t *Ptr;
+    GDTEntry *Ptr;
 } __attribute__((packed)) GDTDescriptor;
 
 typedef enum {
@@ -38,6 +38,7 @@ typedef enum {
 typedef enum {
     GDT_FLAG_64BIT = 0x20,
     GDT_FLAG_32BIT = 0x40,
+    GDT_FLAG_16BIT = 0x00,
 
     GDT_FLAG_GRANULARITY_1B = 0x00,
     GDT_FLAG_GRANULARITY_4K = 0x80,
@@ -52,8 +53,8 @@ typedef enum {
 
 #define GDT_ENTRY(base, limit, access, flags) { \
     GDT_LIMIT_LOW(limit), \
-    GDT_BASE_LOW(limit), \
-    GDT_BASE_MIDDLE(limit), \
+    GDT_BASE_LOW(base), \
+    GDT_BASE_MIDDLE(base), \
     access, \
     GDT_FLAGS_LIMIT_HI(flags, limit), \
     GDT_BASE_HIGH(base), \

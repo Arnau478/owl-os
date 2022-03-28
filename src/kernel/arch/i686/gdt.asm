@@ -19,7 +19,7 @@ i686_GDT_Load:
 .reload_cs:
 
     ; reload data segments
-    mov eax, [ebp + 16]
+    mov ax, [ebp + 16]
     mov ds, ax
     mov es, ax
     mov fs, ax

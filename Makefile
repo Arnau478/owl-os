@@ -4,6 +4,8 @@ include build_scripts/config.mk
 
 all: floppy_image tools_fat
 
+include build_scripts/toolchain.mk
+
 #
 # Floppy image
 #
