@@ -1,0 +1,4 @@
+#pragma once
+
+#define i686_GDT_CODE_SEGMENT 0x8
+#define i686_GDT_DATA_SEGMENT 0x10
