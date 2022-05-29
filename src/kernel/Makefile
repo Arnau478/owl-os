@@ -4,8 +4,8 @@ TARGET_LIBS += -lgcc
 TARGET_LINKFLAGS += -T linker.ld -nostdlib
 
 HEADERS_C=$(shell find . -type f -name "*.h")
-SOURCES_C=$(shell find . -type f -name "*.c")
-HEADERS_ASM=$(shell find . -type f -name "*.inc")
+SOURCES_C=$(shell find . -type f -name "*.c") #arch/i686/isrs_gen.c
+HEADERS_ASM=$(shell find . -type f -name "*.inc") #arch/i686/isrs_gen.inc
 SOURCES_ASM=$(shell find . -type f -name "*.asm")
 OBJECTS_C=$(patsubst %.c, $(BUILD_DIR)/kernel/c/%.obj, $(SOURCES_C))
 OBJECTS_ASM=$(patsubst %.asm, $(BUILD_DIR)/kernel/asm/%.obj, $(SOURCES_ASM))
@@ -29,6 +29,9 @@ $(BUILD_DIR)/kernel/asm/%.obj: %.asm $(HEADERS_ASM)
 	@mkdir -p $(@D)
 	@$(TARGET_ASM) $(TARGET_ASMFLAGS) -o $@ $<
 	@echo "--> Compiled: " $<
+
+arch/i686/isrs_gen.c arch/i686/isrs_gen.inc:
+	@$(ROOT_DIR)/build_tools/generate_isrs.h $@
 
 clean:
 	rm -f $(BUILD_DIR)/kernel.bin
