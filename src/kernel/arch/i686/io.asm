@@ -13,3 +13,8 @@ x86_inb:
     xor eax, eax
     in al, dx
     ret
+
+global i686_Panic
+i686_Panic:
+    cli
+    hlt

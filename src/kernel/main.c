@@ -20,7 +20,9 @@ void __attribute__((section(".entry"))) start(uint16_t bootDrive)
     printf("Owl OS");
     setcolor(0x07);
     printf("...\n");
-    __asm__("int $0x2");
+    printf("Hello!\n");
+    printf("Forbidden number: %d\n", 0/0);
+    printf("Wow!\n");
 
 end:
     for (;;);
