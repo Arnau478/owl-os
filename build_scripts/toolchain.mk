@@ -25,14 +25,15 @@ $(BINUTILS_SRC).tar.xz:
 	cd toolchain && wget $(BINUTILS_URL)
 
 
-GCC_SRC = toolchain/gcc-$(GCC_VERSION)
+GCC_SRC = $(abspath toolchain/gcc-$(GCC_VERSION))
 GCC_BUILD = toolchain/gcc-build-$(GCC_VERSION)
 
 toolchain_gcc: $(TOOLCHAIN_PREFIX)/bin/i686-elf-gcc
 
 $(TOOLCHAIN_PREFIX)/bin/i686-elf-gcc: $(TOOLCHAIN_PREFIX)/bin/i686-elf-ld $(GCC_SRC).tar.gz
-	cd toolchain && tar -xf gcc-$(GCC_VERSION).tar.gz
-	mkdir $(GCC_BUILD)
+	cd toolchain && tar -xf $(GCC_SRC).tar.gz
+	cd toolchain/gcc-$(GCC_VERSION) && ./contrib/download_prerequisites
+	mkdir -p $(GCC_BUILD)
 	cd $(GCC_BUILD) && CFLAGS= ASMFLAGS= CC= CXX= LD= ASM= LINKFLAGS= LIBS= ../gcc-$(GCC_VERSION)/configure \
 		--prefix="$(TOOLCHAIN_PREFIX)" 	\
 		--target=$(TARGET)				\
