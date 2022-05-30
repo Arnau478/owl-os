@@ -16,17 +16,17 @@ stage2: $(BUILD_DIR)/stage2.bin
 
 $(BUILD_DIR)/stage2.bin: $(OBJECTS_ASM) $(OBJECTS_C)
 	@$(TARGET_LD) $(TARGET_LINKFLAGS) -Wl,-Map=$(BUILD_DIR)/stage2.map -o $@ $^ $(TARGET_LIBS)
-	@echo "--> Created stage2.bin"
+	@echo $(ARROW) "Created stage2.bin"
 
 $(BUILD_DIR)/stage2/c/%.obj: %.c
 	@mkdir -p $(@D)
 	@$(TARGET_CC) $(TARGET_CFLAGS) -c -o $@ $<
-	@echo "--> Compiled " $<
+	@echo $(ARROW) "Compiled " $<
 
 $(BUILD_DIR)/stage2/asm/%.obj: %.asm
 	@mkdir -p $(@D)
 	@$(TARGET_ASM) $(TARGET_ASMFLAGS) -o $@ $<
-	@echo "--> Compiled " $<
+	@echo $(ARROW) "Compiled " $<
 
 clean:
 	@rm -f $(BUILD_DIR)/stage2.bin

@@ -18,7 +18,7 @@ $(BUILD_DIR)/main_floppy.img: bootloader kernel
 	@mmd -i $@ sys
 	@mcopy -i $@ $(BUILD_DIR)/stage2.bin "::stage2.bin"
 	@mcopy -i $@ $(BUILD_DIR)/kernel.bin "::sys/kernel.bin"
-	@echo "--> Created " $@
+	@echo $(ARROW) "Created" $@
 
 #
 # Bootloader

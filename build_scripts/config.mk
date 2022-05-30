@@ -20,6 +20,8 @@ export TARGET_LIBS =
 export ROOT_DIR = $(abspath .)
 export BUILD_DIR = $(abspath build)
 
+export ARROW = $(shell echo -e '\x1b[32m\x1b[1m--\x1b[0m')
+
 BINUTILS_VERSION = 2.37
 BINUTILS_URL = https://ftp.gnu.org/gnu/binutils/binutils-$(BINUTILS_VERSION).tar.xz
 
