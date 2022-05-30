@@ -6,6 +6,7 @@ jobs:
   toolchain:
     runs-on: ubuntu-latest
     steps:
+      - run: sudo apt update
       - run: sudo apt-get install libgmp3-dev
       - run: sudo apt-get install libmpfr-dev libmpfr4 libmpfr4-dbg
       - run: sudo apt-get install mpc
