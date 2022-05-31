@@ -12,10 +12,18 @@ jobs:
       - run: sudo apt-get install mpc
       - uses: actions/checkout@v3
       - run: make toolchain
+      - uses: actions/upload-artifact@v3
+        with:
+          name: toolchain
+          path: toolchain/
   build:
     needs: toolchain
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: toolchain
+          path: toolchain/
       - uses: ilammy/setup-nasm@v1
       - uses: actions/checkout@v3
       - run: make clean
