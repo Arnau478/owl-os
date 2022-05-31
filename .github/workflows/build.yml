@@ -3,7 +3,7 @@ name: Owl OS build
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  toolchain:
+  build:
     runs-on: ubuntu-latest
     steps:
       - run: sudo apt update
@@ -11,20 +11,7 @@ jobs:
       - run: sudo apt-get install libmpfr-dev
       - run: sudo apt-get install mpc
       - uses: actions/checkout@v3
-      - run: make toolchain
-      - uses: actions/upload-artifact@v3
-        with:
-          name: toolchain
-          path: toolchain/
-  build:
-    needs: toolchain
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: toolchain
-          path: toolchain/
       - uses: ilammy/setup-nasm@v1
-      - uses: actions/checkout@v3
+      - run: make toolchain
       - run: make clean
       - run: make all
