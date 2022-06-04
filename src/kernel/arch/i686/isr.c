@@ -47,6 +47,18 @@ void i686_ISR_InitializeGates();
 void i686_ISR_Initialize(){
     i686_ISR_InitializeGates();
     
+    // Remap the PIC
+    x86_outb(0x20, 0x11);
+    x86_outb(0xA0, 0x11);
+    x86_outb(0x21, 0x20);
+    x86_outb(0xA1, 0x28);
+    x86_outb(0x21, 0x04);
+    x86_outb(0xA1, 0x02);
+    x86_outb(0x21, 0x01);
+    x86_outb(0xA1, 0x01);
+    x86_outb(0x21, 0x0);
+    x86_outb(0xA1, 0x0);
+    
     for(int i = 0; i < 256; i++){
         i686_IDT_EnableGate(i);
     }
@@ -67,4 +79,8 @@ void __attribute__((cdecl)) i686_ISR_Handler(Registers *regs){
         printf("!!! KERNEL PANIC !!!\n");
         i686_Panic();
     }
+}
+
+void i686_ISR_RegisterHandler(int interrupt, ISRHandler handler){
+    g_ISRHandlers[interrupt] = handler;
 }

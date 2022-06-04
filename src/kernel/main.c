@@ -8,6 +8,8 @@ extern uint8_t __end;
 
 void __attribute__((section(".entry"))) start(uint16_t bootDrive)
 {
+    __asm__("sti");
+
     memset(&__bss_start, 0, (__end) - (__bss_start));
 
     HAL_Initialize();
@@ -20,9 +22,6 @@ void __attribute__((section(".entry"))) start(uint16_t bootDrive)
     printf("Owl OS");
     setcolor(0x07);
     printf("...\n");
-    printf("Hello!\n");
-    printf("Forbidden number: %d\n", 0/0);
-    printf("Wow!\n");
 
 end:
     for (;;);
