@@ -7,7 +7,8 @@ A self-learning operative system developed in C and assembly
 - [x] GDT
 - [x] IDT
 - [x] ISR
-- [ ] Hardware interrupts
+- [x] IRQ
+- [x] Hardware interrupts
 - [ ] User mode
 - [ ] GUI
 - [ ] Builtin C compiler
