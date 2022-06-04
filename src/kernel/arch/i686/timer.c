@@ -3,7 +3,7 @@
 #include "arch/i686/isr.h"
 #include <stdio.h>
 
-void timer_callback(Registers *regs){
+static void timer_callback(Registers *regs){
     printf("TICK!\n");
     i686_outb(0x20, 0x20);
 }
