@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#define IRQ(n) ((n)+32)
+
 typedef struct {
     uint32_t ds;
     uint32_t edi, esi, ebp, kern_esp, ebx, edx, ecx, eax;
