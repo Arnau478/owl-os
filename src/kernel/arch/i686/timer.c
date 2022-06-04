@@ -5,7 +5,7 @@
 
 void timer_callback(Registers *regs){
     printf("TICK!\n");
-    x86_outb(0x20, 0x20);
+    i686_outb(0x20, 0x20);
 }
 
 void i686_Timer_Initialize(int freq){
@@ -13,7 +13,7 @@ void i686_Timer_Initialize(int freq){
     uint32_t divisor = 1193180 / freq;
     uint8_t low  = (uint8_t)(divisor & 0xFF);
     uint8_t high = (uint8_t)( (divisor >> 8) & 0xFF);
-    x86_outb(0x43, 0x36);
-    x86_outb(0x40, low);
-    x86_outb(0x40, high);
+    i686_outb(0x43, 0x36);
+    i686_outb(0x40, low);
+    i686_outb(0x40, high);
 }
