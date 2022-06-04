@@ -14,6 +14,22 @@ i686_inb:
     in al, dx
     ret
 
+global i686_outw
+i686_outw:
+    [bits 32]
+    mov dx, [esp + 4]
+    mov ax, [esp + 8]
+    out dx, ax
+    ret
+
+global i686_inw
+i686_inw:
+    [bits 32]
+    mov dx, [esp + 4]
+    xor eax, eax
+    in ax, dx
+    ret
+
 global i686_Panic
 i686_Panic:
     cli
