@@ -6,13 +6,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt update
-      - run: sudo apt-get install libgmp3-dev
-      - run: sudo apt-get install libmpfr-dev
-      - run: sudo apt-get install mpc
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt-get install libgmp3-dev
+          sudo apt-get install libmpfr-dev
+          sudo apt-get install mpc
+          sudo apt-get install mtools
       - uses: actions/checkout@v3
       - uses: ilammy/setup-nasm@v1
-      - run: sudo apt-get install mtools
-      - run: make toolchain
+      - name: Cache Toolchain
+        id: cache-toolchain
+        uses: actions/cache@v3
+        with:
+          path: toolchain/i686-elf
+          key: toolchain-1
+      - name: Build toolchain
+        if: steps.cache-toolchain.outputs.cache-hit != 'true'
+        run: make toolchain
       - run: make clean
       - run: make all
